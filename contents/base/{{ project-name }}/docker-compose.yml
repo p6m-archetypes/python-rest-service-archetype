@@ -1,0 +1,68 @@
+services:
+{% if persistence == 'PostgreSQL' %}
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: {{ project-name }}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+{% endif %}
+{% if persistence == 'MySQL' %}
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_DATABASE: {{ project-name }}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+{% endif %}
+{% if cache == 'Redis' %}
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+{% endif %}
+{% if messaging == 'Kafka' %}
+  kafka:
+    image: confluentinc/cp-kafka:7.8.0
+    environment:
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qg
+    ports:
+      - "9092:9092"
+
+{% endif %}
+{% if messaging == 'Pulsar' %}
+  pulsar:
+    image: apachepulsar/pulsar:3.3.0
+    command: bin/pulsar standalone
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+
+{% endif %}
+volumes:
+{% if persistence == 'PostgreSQL' %}
+  postgres_data:
+{% endif %}
+{% if persistence == 'MySQL' %}
+  mysql_data:
+{% endif %}
