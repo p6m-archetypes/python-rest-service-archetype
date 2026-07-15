@@ -78,6 +78,12 @@ elseif context:get("persistence") == "MySQL" then
     require("python-resource-mysql").render(context, dest)
 end
 
+-- Sample scaffold entity + CRUD routes over the persistence resource (registers
+-- its entities on the resource library's declarative Base).
+if context:get("has_persistence") then
+    directory.render("contents/persistence", context)
+end
+
 if context:get("has_cache") then
     require("python-resource-redis").render(context, dest)
 end
