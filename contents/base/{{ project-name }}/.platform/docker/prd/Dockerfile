@@ -11,7 +11,8 @@ RUN pip install --no-cache-dir uv
 
 # Copy project definition and install dependencies
 COPY pyproject.toml ./
-RUN uv pip install --system --no-cache -e .
+COPY src/ ./src/
+RUN uv pip install --system --no-cache .
 
 FROM python:3.12-slim
 WORKDIR /app
