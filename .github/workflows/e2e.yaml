@@ -1,0 +1,53 @@
+name: E2E CI/CD Test
+
+# Validates this archetype's CURRENT branch code end to end: renders the pushed
+# commit, pushes the generated service to a fresh GitHub repo, and watches the
+# whole GitOps deploy loop (Build -> tag+release+digest -> .platform dispatch ->
+# ArgoCD app Synced/Healthy -> Deployment Available), then tears it all down.
+#
+# The actual logic lives in the shared reusable workflow in archetype-e2e-tests;
+# this just points it at this repo at the pushed SHA and supplies the answers.
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+    inputs:
+      github_org:
+        description: "Target GitHub org for the test service"
+        type: string
+        default: "ybor-playground"
+      keep_resources:
+        description: "Skip teardown (leave the repo/app up for debugging)"
+        type: boolean
+        default: false
+
+jobs:
+  e2e:
+    # NOTE: pinned to the slash-free preview tag until PR #1 merges; switch to
+    # @main after. (A branch ref with a "/" doesn't resolve for reusable workflows.)
+    uses: p6m-archetypes/archetype-e2e-tests/.github/workflows/e2e-reusable.yaml@dev
+    with:
+      # Render THIS repo at the exact pushed commit (current-branch code).
+      archetype_repo: ${{ github.repository }}
+      archetype_ref: ${{ github.sha }}
+      github_org: ${{ github.event.inputs.github_org || 'ybor-playground' }}
+      harness_ref: dev
+      keep_resources: ${{ github.event.inputs.keep_resources == 'true' }}
+      answers: |
+        author_name: "Archetype E2E"
+        author_email: "e2e@ybor.ai"
+        org_name: "ybor"
+        solution_name: "playground"
+        prefix_name: "placeholder"
+        suffix_name: "Service"
+        image_registry: "p6m.jfrog.io"
+        persistence: "None"
+        cache: "None"
+        messaging: "None"
+        messaging_access: "produce"
+        object_storage: []
+        service: "8080"
+        management: "8081"
+        debug: "5005"
+    secrets: inherit
