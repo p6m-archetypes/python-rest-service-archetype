@@ -26,13 +26,13 @@ jobs:
   e2e:
     # NOTE: pinned to the slash-free preview tag until PR #1 merges; switch to
     # @main after. (A branch ref with a "/" doesn't resolve for reusable workflows.)
-    uses: p6m-archetypes/archetype-e2e-tests/.github/workflows/e2e-reusable.yaml@e2e-harness-preview
+    uses: p6m-archetypes/archetype-e2e-tests/.github/workflows/e2e-reusable.yaml@dev
     with:
       # Render THIS repo at the exact pushed commit (current-branch code).
       archetype_repo: ${{ github.repository }}
       archetype_ref: ${{ github.sha }}
       github_org: ${{ github.event.inputs.github_org || 'ybor-playground' }}
-      harness_ref: e2e-harness-preview
+      harness_ref: dev
       keep_resources: ${{ github.event.inputs.keep_resources == 'true' }}
       answers: |
         author_name: "Archetype E2E"
