@@ -132,9 +132,11 @@ prova.group("python-rest layout", function(g)
     -- {{ PrefixName }}{{ SuffixName }} -> ExampleService in the app title; project-name in identity.
     t:expect(fs.read(root .. "/src/example_service/main.py"), "app title"):contains("ExampleService")
     t:expect(fs.read(root .. "/src/example_service/router.py"), "identity stub"):contains(PROJECT_DIR)
-    -- service-port + derived management-port land in settings.
+    -- service-port + derived management-port land in settings; the service port binds the
+    -- platform's SERVER_PORT (with PORT still honored).
     local settings = fs.read(root .. "/src/example_service/settings.py")
-    t:expect(settings, "service port"):contains("port: int = 8080")
+    t:expect(settings, "service port default"):contains("default=8080")
+    t:expect(settings, "platform SERVER_PORT alias"):contains("server_port")
     t:expect(settings, "management port"):contains("management_port: int = 8081")
   end)
 
@@ -193,8 +195,8 @@ prova.group("python-rest HTTP endpoints", { requires = { "uv" } }, function(g)
 
   g:test("the management sidecar exposes Prometheus metrics", function(t)
     local svc = t:use(service)
-    -- /metrics 307-redirects to /metrics/; hit the canonical path directly.
-    local r = http.get(svc.mgmt_url .. "/metrics/")
+    -- An explicit route: GET /metrics answers 200 directly (no trailing-slash redirect).
+    local r = http.get(svc.mgmt_url .. "/metrics")
     t:expect(r.status, "metrics status code"):equals(200)
     t:expect(r.body, "Prometheus exposition format"):contains("# HELP")
   end)
@@ -284,7 +286,7 @@ for _, v in ipairs(VARIANTS) do
       local svc = t:use(variant_service)
 
       -- Create through the public API...
-      local created = svc.api:post("/api/items", { json = { displayName = "widget" } })
+      local created = svc.api:post("/api/v1/examples", { json = { displayName = "widget" } })
       t:expect(created.status):equals(201)
       local body = created:json()
       t:expect(body.displayName):equals("widget")
@@ -294,21 +296,21 @@ for _, v in ipairs(VARIANTS) do
       t:expect(svc.db:query_value(v.count_by_name, { "widget" }), "rows in DB"):equals(1)
 
       -- Read back through every door.
-      t:expect(svc.api:get("/api/items/" .. body.id):json().displayName):equals("widget")
+      t:expect(svc.api:get("/api/v1/examples/" .. body.id):json().displayName):equals("widget")
     end)
 
     g:test("updates and deletes round-trip into " .. v.persistence, function(t)
       local svc = t:use(variant_service)
 
-      local body = svc.api:post("/api/items", { json = { displayName = "ephemeral" } }):json()
+      local body = svc.api:post("/api/v1/examples", { json = { displayName = "ephemeral" } }):json()
 
-      local updated = svc.api:put("/api/items/" .. body.id, { json = { displayName = "renamed" } })
+      local updated = svc.api:put("/api/v1/examples/" .. body.id, { json = { displayName = "renamed" } })
       t:expect(updated.status):equals(200)
       t:expect(svc.db:query_value(v.count_by_name, { "renamed" }), "renamed row in DB"):equals(1)
       t:expect(svc.db:query_value(v.count_by_name, { "ephemeral" }), "old name gone"):equals(0)
 
-      t:expect(svc.api:delete("/api/items/" .. body.id).status):equals(204)
-      t:expect(svc.api:get("/api/items/" .. body.id).status):equals(404)
+      t:expect(svc.api:delete("/api/v1/examples/" .. body.id).status):equals(204)
+      t:expect(svc.api:get("/api/v1/examples/" .. body.id).status):equals(404)
       t:expect(svc.db:query_value(v.count_by_name, { "renamed" }), "row deleted from DB"):equals(0)
     end)
   end)
