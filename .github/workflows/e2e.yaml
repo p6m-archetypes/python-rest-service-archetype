@@ -1,4 +1,4 @@
-name: E2E Deploy Loop
+name: E2E CI/CD Test
 
 # Validates this archetype's CURRENT branch code end to end: renders the pushed
 # commit, pushes the generated service to a fresh GitHub repo, and watches the
