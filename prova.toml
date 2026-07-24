@@ -18,4 +18,4 @@ mysql    = "prova-rs/prova-mysql@v1"
 p6m      = "p6m-archetypes/prova-p6m-standards@v1"
 # The reusable deploy-loop proof consumed by the e2e suite (path-local while it incubates; pin its
 # git tag once published, e.g. "p6m-archetypes/prova-p6m-deploy-loop@v1").
-deploy   = { path = "../prova-p6m-deploy-loop" }
+deploy   = "p6m-archetypes/prova-p6m-deploy-loop@dev"
