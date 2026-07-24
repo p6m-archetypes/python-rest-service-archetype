@@ -12,7 +12,6 @@ on:
         description: "Skip teardown (leave the repo/app up for debugging)."
         type: boolean
         default: false
-  push:
 
 jobs:
   e2e:

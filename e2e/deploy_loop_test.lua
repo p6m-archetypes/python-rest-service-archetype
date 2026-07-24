@@ -38,7 +38,6 @@ local cfg = deploy.resolve(deploy.from_env{
     messaging        = "None",
     object_storage   = {},
   },
-  keep_resources = true,
 })
 
 -- The shared, flow-scoped run state (+ guaranteed teardown at flow end).
