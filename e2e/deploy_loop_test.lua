@@ -25,13 +25,15 @@ local solution = env("SOLUTION_NAME", "playground")
 
 local cfg = deploy.resolve(deploy.from_env{
   archetype_dir = ".",   -- render this repo's current code
+  -- The plugin forces a unique name per run through `prefix_key`; since YP6M-3424 the archetypes'
+  -- single identity answer is `project_name`, so that is the key it overrides.
+  prefix_key = "project_name",
   answers = {
-    author_name      = "Archetype E2E",
-    author_email     = "e2e@ybor.ai",
-    org_name         = org,
-    solution_name    = solution,
-    prefix_name      = "Example",   -- overridden per run by the plugin for a unique repo name
-    suffix_name      = "Service",
+    project_name     = "example-service",  -- overridden per run by the plugin for a unique repo name
+    -- `solution_name` is now the WHOLE slug (it replaced org_name x solution_name), so it must
+    -- carry both halves — otherwise the namespace and the GitHub org this loop targets move.
+    solution_name    = org .. "-" .. solution,
+    entity_name      = "example",
     image_registry   = "p6m.jfrog.io",
     persistence      = "None",
     cache            = "None",
