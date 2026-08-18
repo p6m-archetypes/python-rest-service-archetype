@@ -107,7 +107,7 @@ def create_app() -> FastAPI:
     setup_telemetry()
 
     app = FastAPI(
-        title="{{ PrefixName }}{{ SuffixName }}",
+        title="{{ ProjectName }}",
         lifespan=lifespan,
     )
     app.include_router(router)
@@ -124,7 +124,7 @@ app = create_app()
 
 async def run() -> None:
     service_config = uvicorn.Config(
-        "{{ prefix_name }}_{{ suffix_name }}.main:app",
+        "{{ project_name }}.main:app",
         host=settings.host,
         port=settings.port,
         log_level=settings.log_level.lower(),

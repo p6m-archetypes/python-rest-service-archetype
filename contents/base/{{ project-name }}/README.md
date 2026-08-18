@@ -1,4 +1,4 @@
-# {{ PrefixName }}{{ SuffixName }}
+# {{ ProjectName }}
 
 A FastAPI REST service.
 
@@ -9,7 +9,7 @@ A FastAPI REST service.
 uv sync --group dev
 
 # Run the service
-uv run uvicorn {{ prefix_name }}_{{ suffix_name }}.main:app --reload --port {{ service_port }}
+uv run uvicorn {{ project_name }}.main:app --reload --port {{ service_port }}
 
 # Run tests
 uv run pytest
