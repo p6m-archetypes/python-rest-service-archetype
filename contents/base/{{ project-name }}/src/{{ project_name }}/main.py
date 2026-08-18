@@ -62,7 +62,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # Sample scaffold: importing the domain module registers its entities on the
     # persistence Base; ensure_schema creates any missing tables. Replace with
     # real migrations (alembic) as the domain solidifies.
-    from .domain import items  # noqa: F401
+    from .domain import {{ entity_name }}s  # noqa: F401
     from .persistence import ensure_schema
     await ensure_schema()
 {% endif %}
@@ -113,7 +113,7 @@ def create_app() -> FastAPI:
     app.include_router(router)
 {% if persistence ~= 'None' %}
     # Sample scaffold CRUD routes over the persistence resource (api/items.py).
-    from .api.items import router as items_router
+    from .api.{{ entity_name }}s import router as items_router
     app.include_router(items_router)
 {% endif %}
     return app
