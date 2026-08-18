@@ -112,7 +112,7 @@ def create_app() -> FastAPI:
     )
     app.include_router(router)
 {% if persistence ~= 'None' %}
-    # Sample scaffold CRUD routes over the persistence resource (api/items.py).
+    # Sample scaffold CRUD routes over the persistence resource (api/{{ entity_name }}s.py).
     from .api.{{ entity_name }}s import router as items_router
     app.include_router(items_router)
 {% endif %}

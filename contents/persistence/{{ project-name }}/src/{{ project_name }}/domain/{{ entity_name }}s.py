@@ -7,7 +7,7 @@ from ..persistence.models import Base
 
 
 # Sample scaffold entity proving the persistence round trip end-to-end.
-# Replace with your real domain model (and rename the routes in api/items.py to match).
+# Replace with your real domain model (and rename the routes in api/{{ entity_name }}s.py to match).
 class {{ EntityName }}Entity(Base):
     __tablename__ = "{{ entity_name }}s"
 

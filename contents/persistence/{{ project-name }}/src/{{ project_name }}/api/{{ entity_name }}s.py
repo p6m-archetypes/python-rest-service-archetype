@@ -9,7 +9,7 @@ from ..persistence import get_session
 
 # Sample scaffold CRUD routes for the {{ EntityName }} entity — the persistence round trip a
 # black-box test can drive. The route is name-derived and versioned per the p6m platform
-# standard (S2): /api/v1/{{ entity-name }}s. Rename alongside domain/items.py when you add
+# standard (S2): /api/v1/{{ entity-name }}s. Rename alongside domain/{{ entity_name }}s.py when you add
 # your real model.
 router = APIRouter(prefix="/api/v1/{{ entity-name }}s")
 
@@ -18,7 +18,7 @@ class ItemRequest(BaseModel):
     display_name: str = Field(alias="displayName")
 
 
-def _to_json(item: {{ EntityName }}) -> dict:
+def _to_json(item: {{ EntityName }}Entity) -> dict:
     return {"id": item.id, "displayName": item.display_name}
 
 
