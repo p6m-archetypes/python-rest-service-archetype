@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
-from ..domain.{{ entity_name }}s import {{ EntityName }}
+from ..domain.{{ entity_name }}s import {{ EntityName }}Entity
 from ..persistence import get_session
 
 # Sample scaffold CRUD routes for the {{ EntityName }} entity — the persistence round trip a
@@ -24,7 +24,7 @@ def _to_json(item: {{ EntityName }}) -> dict:
 
 @router.post("", status_code=201)
 async def create_item(request: ItemRequest) -> dict:
-    item = {{ EntityName }}(id=str(uuid4()), display_name=request.display_name)
+    item = {{ EntityName }}Entity(id=str(uuid4()), display_name=request.display_name)
     async with get_session() as session:
         session.add(item)
         await session.commit()
@@ -34,14 +34,14 @@ async def create_item(request: ItemRequest) -> dict:
 @router.get("")
 async def list_items() -> list[dict]:
     async with get_session() as session:
-        result = await session.execute(select({{ EntityName }}).order_by({{ EntityName }}.created_at))
+        result = await session.execute(select({{ EntityName }}Entity).order_by({{ EntityName }}Entity.created_at))
         return [_to_json(item) for item in result.scalars()]
 
 
 @router.get("/{item_id}")
 async def get_item(item_id: str) -> dict:
     async with get_session() as session:
-        item = await session.get({{ EntityName }}, item_id)
+        item = await session.get({{ EntityName }}Entity, item_id)
         if item is None:
             raise HTTPException(status_code=404, detail="{{ EntityName }} not found")
         return _to_json(item)
@@ -50,7 +50,7 @@ async def get_item(item_id: str) -> dict:
 @router.put("/{item_id}")
 async def update_item(item_id: str, request: ItemRequest) -> dict:
     async with get_session() as session:
-        item = await session.get({{ EntityName }}, item_id)
+        item = await session.get({{ EntityName }}Entity, item_id)
         if item is None:
             raise HTTPException(status_code=404, detail="{{ EntityName }} not found")
         item.display_name = request.display_name
@@ -61,7 +61,7 @@ async def update_item(item_id: str, request: ItemRequest) -> dict:
 @router.delete("/{item_id}", status_code=204)
 async def delete_item(item_id: str) -> None:
     async with get_session() as session:
-        item = await session.get({{ EntityName }}, item_id)
+        item = await session.get({{ EntityName }}Entity, item_id)
         if item is None:
             raise HTTPException(status_code=404, detail="{{ EntityName }} not found")
         await session.delete(item)
