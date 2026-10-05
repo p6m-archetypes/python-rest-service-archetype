@@ -19,8 +19,10 @@ local function env(name, default)
 end
 
 -- Identity the generated CI + ArgoCD naming line up with (override via env for other targets).
-local org = env("ORG_NAME", "ybor")
-local solution = env("SOLUTION_NAME", "playground")
+-- `ORGANIZATION_NAME` is the GitHub organization the loop targets. The pre-YP6M-3798 pair
+-- `ORG_NAME` / `SOLUTION_NAME` still composes it when it is unset, so an old shell keeps working.
+local organization = env("ORGANIZATION_NAME",
+  env("ORG_NAME", "ybor") .. "-" .. env("SOLUTION_NAME", "playground"))
 
 
 local cfg = deploy.resolve(deploy.from_env{
@@ -30,9 +32,9 @@ local cfg = deploy.resolve(deploy.from_env{
   prefix_key = "project_name",
   answers = {
     project_name     = "example-service",  -- overridden per run by the plugin for a unique repo name
-    -- `solution_name` is now the WHOLE slug (it replaced org_name x solution_name), so it must
-    -- carry both halves — otherwise the namespace and the GitHub org this loop targets move.
-    solution_name    = org .. "-" .. solution,
+    -- The GitHub organization, whole — it is the namespace prefix and the repo owner, so a
+    -- different value moves both the namespace and the GitHub org this loop targets.
+    organization_name = organization,
     entity_name      = "example",
     image_registry   = "p6m.jfrog.io",
     persistence      = "None",

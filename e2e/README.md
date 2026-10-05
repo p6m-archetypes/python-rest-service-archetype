@@ -63,9 +63,9 @@ editing it:
 
 | Var | Default | Meaning |
 |---|---|---|
-| `ORG_NAME` / `SOLUTION_NAME` | `ybor` / `playground` | Archetype identity (drives `group_id`, repo owner, ArgoCD naming) |
+| `ORGANIZATION_NAME` | `ybor-playground` | The GitHub organization (drives `group_id`, repo owner, namespace, ArgoCD naming). Falls back to `${ORG_NAME}-${SOLUTION_NAME}` when unset |
 | `PROJECT_SUFFIX` | `Service` | Project name suffix |
-| `GROUP_ID` | `<org>.<solution>` | Maven groupId |
+| `GROUP_ID` | `<organization>` with `-` → `.` | Maven groupId |
 | `ARTIFACTORY_HOST` / `IMAGE_REGISTRY` | `p6m.jfrog.io` | Registry coordinates |
 | `PERSISTENCE` | `None` | Persistence backend (`None`/`PostgreSQL`/`MySQL`) |
 
